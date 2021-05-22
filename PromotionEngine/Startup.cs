@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using PromotionEngine.DBRepo;
+using PromotionEngine.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,11 @@ namespace PromotionEngine
             });
             services.AddDbContext<ApiContext>(opt => opt.UseInMemoryDatabase("PromotionEngin"));
             services.AddScoped<ApiContext>();
+            services.AddScoped<IRuleEngine, ApiContext>();
+           // services.AddScoped<OrderBase, Cart>();
+           // services.AddScoped<Discount>();
+            // services.AddScoped<Cart>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
