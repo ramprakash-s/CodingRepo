@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using PromotionEngine.DBRepo;
 using PromotionEngine.Entity;
+using PromotionEngine.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,24 +14,40 @@ namespace PromotionEngine.Controllers
     [Route("[controller]")]
     public class ProductController : ControllerBase
     {
+        #region private
         private readonly ILogger<ProductController> _logger;
-        private readonly ApiContext apiContext;
-        private readonly IRuleEngine rule;
+        private readonly IDbManager _dbManager;
+        #endregion
 
-        public ProductController(ILogger<ProductController> logger, ApiContext apiContext, IRuleEngine ruleEngine)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="dbManager"></param>
+        public ProductController(ILogger<ProductController> logger, IDbManager dbManager)
         {
             _logger = logger;
-            this.apiContext = apiContext;
-            this.rule = ruleEngine;
+            this._dbManager = dbManager;
+            
         }
 
+        #region api
         // GET api/values  
         [HttpGet]
         [Route("GetProducts")]
         public async Task<IActionResult> Get()
         {
-            List<Product> products = apiContext.GetProducts();
-            return Ok(products);
+            try
+            {
+                List<Product> products = this._dbManager.GetProducts();
+                return Ok(products);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message.ToString());
+                return BadRequest(ex.Message.ToString());
+            }
         }
 
         // GET api/values  
@@ -38,8 +55,17 @@ namespace PromotionEngine.Controllers
         [Route("GetRules")]
         public async Task<IActionResult> GetRules()
         {
-            List<RuleEngine> rules = apiContext.GetRules();
-            return Ok(rules);
+            try
+            {
+                List<RuleEngine> rules = this._dbManager.GetRules();
+                return Ok(rules);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message.ToString());
+                return BadRequest(ex.Message.ToString());
+            }
         }
+        #endregion
     }
 }

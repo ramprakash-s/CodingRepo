@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,10 +11,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using PromotionEngine.DBRepo;
 using PromotionEngine.Entity;
+using PromotionEngine.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Identity.Web;
+using PromotionEngine.Repository;
 
 namespace PromotionEngine
 {
@@ -29,6 +33,8 @@ namespace PromotionEngine
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+               .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -38,7 +44,8 @@ namespace PromotionEngine
             services.AddDbContext<ApiContext>(opt => opt.UseInMemoryDatabase("PromotionEngin"));
             services.AddScoped<ApiContext>();
             services.AddScoped<IRuleEngine, ApiContext>();
-           // services.AddScoped<OrderBase, Cart>();
+            services.AddTransient<IOrderDetail, OrderDetail>();
+            services.AddScoped<IDbManager, DbManager>();
            // services.AddScoped<Discount>();
             // services.AddScoped<Cart>();
 
@@ -58,6 +65,7 @@ namespace PromotionEngine
 
             app.UseRouting();
 
+            app.UseAuthorization();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

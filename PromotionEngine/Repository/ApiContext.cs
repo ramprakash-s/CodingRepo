@@ -7,7 +7,12 @@ using System.Threading.Tasks;
 
 namespace PromotionEngine.DBRepo
 {
-    public class ApiContext : DbContext,IRuleEngine
+    //public interface IApiContext<TEntity> : IDisposable where TEntity :class
+    //{
+    //    IQueryable<TEntity> GetAllProduncts();
+    //    IQueryable<TEntity> GettAllPromotions();
+    //}
+    public class ApiContext : DbContext,IRuleEngine //, IApiContext<TEntity> where TEntity :class
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<RuleEngine> Rules { get; set; }
@@ -67,6 +72,17 @@ namespace PromotionEngine.DBRepo
             Products.Add(product);
         }
 
+        public void CreateRules()
+        {
+            RuleEngine rule = new RuleEngine() { Id = Guid.NewGuid(), Title = "Promotion1", IsActive = true, ProductName = "A", RuleName = "BuyNoOfItemDiscount", Value = "3", Price = 130, CreatedAt = DateTime.UtcNow };
+            Rules.Add(rule);
+            rule = new RuleEngine() { Id = Guid.NewGuid(), Title = "Promotion2", IsActive = true, ProductName = "B", RuleName = "BuyNoOfItemDiscount", Value = "3", Price = 50, CreatedAt = DateTime.UtcNow };
+            Rules.Add(rule);
+            rule = new RuleEngine() { Id = Guid.NewGuid(), Title = "Promotion3", IsActive = true, ProductName = "C", RuleName = "BuyXGetY", Value = "C,D", Price = 30, CreatedAt = DateTime.UtcNow };
+            Rules.Add(rule);
+            rule = new RuleEngine() { Id = Guid.NewGuid(), Title = "Promotion4", IsActive = false, ProductName = "E", RuleName = "percentageOff", Value = "5", Price = 0, CreatedAt = DateTime.UtcNow };
+            Rules.Add(rule);
+        }
         /// <summary>
         /// Retuns all product details
         /// </summary>
@@ -81,17 +97,6 @@ namespace PromotionEngine.DBRepo
             return Rules.Local.ToList<RuleEngine>();
         }
 
-        public void CreateRules()
-        {
-            RuleEngine rule = new RuleEngine() { Id = Guid.NewGuid(), Title = "Promotion1", IsActive = true, ProductName = "A", RuleName = "BuyNoOfItemDiscount", Value = "3", Price=130 , CreatedAt = DateTime.UtcNow };
-            Rules.Add(rule);
-            rule = new RuleEngine() { Id = Guid.NewGuid(), Title="Promotion2", IsActive = true, ProductName = "B", RuleName = "BuyNoOfItemDiscount", Value = "3", Price = 50, CreatedAt = DateTime.UtcNow };
-            Rules.Add(rule);
-            rule = new RuleEngine() { Id = Guid.NewGuid(), Title = "Promotion3", IsActive = true, ProductName = "C", RuleName = "BuyXGetY", Value = "C,D", Price = 30, CreatedAt = DateTime.UtcNow };
-            Rules.Add(rule);
-            rule = new RuleEngine() { Id = Guid.NewGuid(), Title = "Promotion4", IsActive = false, ProductName = "E", RuleName = "percentageOff", Value = "5", Price = 0, CreatedAt = DateTime.UtcNow };
-            Rules.Add(rule);
-        }
         
     }
 }

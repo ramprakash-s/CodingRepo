@@ -21,8 +21,6 @@ namespace PromotionEngine.Entity
             Name = name;
         }
 
-        public virtual bool CanBeUsedInJuntionWithOtherDiscounts { get; set; }
-        public virtual bool SupercedesOtherDiscounts { get; set; }
         public abstract OrderBase ApplyDiscount();
         public virtual OrderBase OrderBase { get; set; }
         public virtual string Name { get; private set; }
@@ -34,12 +32,13 @@ namespace PromotionEngine.Entity
         {
         }
 
-        public BuyNoOfItemDiscount(string productName, int maxCount, decimal fixedPrice)
-            : base(productName)
+        public BuyNoOfItemDiscount(string name, IList<Product> applicableProducts, int maxCount, decimal fixedPrice)
+            : base(name)
         {
             MaxCount = maxCount;
-            ProductName = productName;
+            Name = name;
             FixedPrice = fixedPrice;
+            ApplicableProducts = applicableProducts;
         }
 
         public override OrderBase ApplyDiscount()
@@ -47,7 +46,7 @@ namespace PromotionEngine.Entity
             // custom processing
             foreach (LineItem lineItem in OrderBase.LineItems)
             {
-                if (lineItem.Product?.ItemName == ProductName)
+                if (ApplicableProducts.Contains(lineItem.Product))
                 {
                     if (lineItem.Quantity >= MaxCount)
                     {                        
@@ -63,8 +62,9 @@ namespace PromotionEngine.Entity
         }
 
         public virtual int MaxCount { get; set; }
-        public virtual string ProductName { get; set; }
+        public virtual string Name { get; set; }
         public virtual decimal FixedPrice { get; set; }
+        public virtual IList<Product> ApplicableProducts { get; set; }
 
     }
 
@@ -90,7 +90,7 @@ namespace PromotionEngine.Entity
             // custom processing
             foreach (LineItem lineItem in OrderBase.LineItems)
             {
-                if (ApplicableProducts.Contains(lineItem.Product) && lineItem.Quantity > X)
+                if (ApplicableProducts.Contains(lineItem.Product))
                 {
                     
                     if (X > Y)
